@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat/text_composer.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart'  as firebase_storage;
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'dart:io' as io;
 
 class ChatScreen extends StatefulWidget {
@@ -11,25 +11,24 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  void _sendMesssage({String? text, XFile? imgFile}) async {
+    if (imgFile != null) {
+      firebase_storage.UploadTask task = firebase_storage
+          .FirebaseStorage.instance
+          .ref()
+          .child(DateTime.now().microsecondsSinceEpoch.toString())
+          .putFile(io.File(imgFile.path));
 
-void _sendMesssage({String? text, XFile? imgFile}){
+      firebase_storage.TaskSnapshot taskSnapshot = await task;
+      String url = await taskSnapshot.ref.getDownloadURL();
 
-  if(imgFile !=null){
-
-      firebase_storage.UploadTask task = firebase_storage.FirebaseStorage.instance.ref().child(
-
-        DateTime.now().microsecondsSinceEpoch.toString()
-      ).putFile(io.File(imgFile.path));
+      print('teste');
+      print(url);
+    }
+    FirebaseFirestore.instance.collection('menssagens').add({'text': text});
   }
-  FirebaseFirestore.instance.collection('menssagens').add({
-    'text': text
-}
-  );
 
-
-}
-
-  @override
+  @override 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
